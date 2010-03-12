@@ -30,7 +30,8 @@ module AjaxfulRating # :nodoc:
         :wrap => true,
         :small => false,
         :show_user_rating => false,
-        :force_static => false
+        :force_static => false,
+        :current_user => (@template.current_user if @template.respond_to?(:current_user))
       }.merge(options)
       
       @options[:small] = @options[:small].to_s == 'true'
@@ -77,7 +78,8 @@ module AjaxfulRating # :nodoc:
         :zIndex => (rateable.class.max_stars + 2 - value).to_s
       })
 
-      if !options[:force_static] && (user && (!already_rated || rateable.axr_config[:allow_update]))
+      if !options[:force_static] && (user && options[:current_user] == user &&
+        (!already_rated || rateable.axr_config[:allow_update]))
         @template.content_tag(:li, link_star_tag(value, css_class))
       else
         @template.content_tag(:li, @template.content_tag(:span, show_value, :class => css_class, :title => i18n(:current)))
